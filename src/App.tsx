@@ -1,11 +1,14 @@
-import Container from "./components/ui/container"
-import './styles/global.scss'
+import { HistoryBlock } from "@components/history-block";
+import "./styles/global.scss";
 
 const App = () => {
   return (
-    <Container fullHeight>
+    <>
+      <HistoryBlock
+        title="Исторические даты"
+      />
       <h1>Hello World</h1>
-    </Container>
+    </>
   );
 };
 

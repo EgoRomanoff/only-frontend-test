@@ -1,0 +1,39 @@
+@import '@styles/vars';
+
+.block {
+  $line-color: rgba($color-grayblue, .1);
+  $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
+  $line-size: 1px 100%;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 17rem;
+
+  background:
+    $line-gradient left center / $line-size no-repeat,   // left line
+    $line-gradient center center / $line-size no-repeat, // center line
+    $line-gradient right center / $line-size no-repeat;  // right line
+}
+
+.title {
+  position: relative;
+  padding-left: 8rem;
+  width: 100%;
+  max-width: 44rem;
+  font-size: 5.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 90%;
+    background: linear-gradient($color-blue, $color-fuschia);
+  }
+}

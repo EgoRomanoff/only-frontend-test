@@ -23,6 +23,12 @@
     "strictPropertyInitialization": true,
     "checkJs": true,
     "isolatedModules": true,
+
+    "baseUrl": "src",
+    "paths": {
+      "@components/*": ["components/*"],
+      "@styles/*": ["styles/*"],
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"],

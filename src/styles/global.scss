@@ -1,14 +1,15 @@
 @use './_reset';
-@use './_vars';
+@import './_vars';
 
 html {
   font-size: 62.5%; // 10px
 }
 
 body {
-  font-family: vars.$font-primary;
+  font-family: $font-primary;
   font-size: 1.6rem; // 16px
-  background-color: vars.$color-whitegray;
+  color: $color-grayblue;
+  background-color: $color-whitegray;
 }
 
 #root {
