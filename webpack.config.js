@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-module.exports = (env) => {
+module.exports = env => {
   const { mode } = env;
   const isDev = mode === "development";
   const isProd = mode === "production";
@@ -11,20 +11,22 @@ module.exports = (env) => {
   const styleLoader = (isModule = false) => {
     return [
       isProd ? MiniCssExtractPlugin.loader : "style-loader",
-      isModule ? {
-        loader: "css-loader",
-        options: {
-          modules: {
-            namedExport: false,
-            exportLocalsConvention: "as-is",
-            localIdentName: "[local]__[hash:base64:5]",
-          },
-          importLoaders: 1,
-        },
-      } : "css-loader",
+      isModule
+        ? {
+            loader: "css-loader",
+            options: {
+              modules: {
+                namedExport: false,
+                exportLocalsConvention: "as-is",
+                localIdentName: "[local]__[hash:base64:5]",
+              },
+              importLoaders: 1,
+            },
+          }
+        : "css-loader",
       "sass-loader",
-    ]
-  }
+    ];
+  };
 
   return {
     mode,
@@ -40,8 +42,9 @@ module.exports = (env) => {
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx"],
       alias: {
-        '@components': path.resolve(__dirname, 'src', 'components'),
-        '@styles': path.resolve(__dirname, 'src', 'styles'),
+        "@components": path.resolve(__dirname, "src", "components"),
+        "@styles": path.resolve(__dirname, "src", "styles"),
+        "@types": path.resolve(__dirname, "src", "types"),
       },
     },
 
