@@ -1,24 +1,65 @@
 const path = require("path");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-module.exports = (env, argv) => {
-  const { mode } = argv;
-  const isProduction = mode === "production";
+module.exports = (env) => {
+  const { mode } = env;
+  const isDev = mode === "development";
+  const isProd = mode === "production";
+
+  const styleLoader = (isModule = false) => {
+    return [
+      isProd ? MiniCssExtractPlugin.loader : "style-loader",
+      isModule ? {
+        loader: "css-loader",
+        options: {
+          modules: {
+            namedExport: false,
+            exportLocalsConvention: "as-is",
+            localIdentName: "[local]__[hash:base64:5]",
+          },
+          importLoaders: 1,
+        },
+      } : "css-loader",
+      "sass-loader",
+    ]
+  }
 
   return {
     mode,
-    entry: path.resolve(__dirname, "src/main.tsx"),
+    entry: path.resolve(__dirname, "src", "main.tsx"),
+
     output: {
       publicPath: "/",
       path: path.resolve(__dirname, "dist"),
       filename: "[name].[contenthash].js",
       clean: true,
     },
+
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx"],
     },
+
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, "src", "index.html"),
+      }),
+      isDev && new webpack.ProgressPlugin(),
+      isProd &&
+        new MiniCssExtractPlugin({
+          filename: "css/[name].[contenthash:8].css",
+          chunkFilename: "css/[name].[contenthash:8].css",
+        }),
+    ].filter(Boolean),
+
     module: {
       rules: [
+        {
+          test: /\.tsx?$/,
+          use: "ts-loader",
+          exclude: /node_modules/,
+        },
         {
           test: /\.(js|jsx)$/,
           exclude: /node_modules/,
@@ -30,18 +71,14 @@ module.exports = (env, argv) => {
           },
         },
         {
-          test: /\.(ts|tsx)$/,
-          exclude: /node_modules/,
-          use: "ts-loader",
+          test: /\.s?css$/i,
+          exclude: [/\.module\.scss$/, /node_modules/],
+          use: styleLoader(),
         },
         {
-          test: /\.css$/,
+          test: /\.module.s?css$/i,
           exclude: /node_modules/,
-          use: ["style-loader", "css-loader"],
-        },
-        {
-          test: /\.scss$/,
-          use: ["style-loader", "css-loader", "sass-loader"],
+          use: styleLoader(true),
         },
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
@@ -49,12 +86,9 @@ module.exports = (env, argv) => {
         },
       ],
     },
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, "src/index.html"),
-      }),
-    ],
-    devtool: isProduction ? "source-map" : "inline-source-map",
+
+    devtool: isDev ? "inline-source-map" : false,
+
     devServer: {
       static: {
         directory: path.resolve(__dirname, "public"),
