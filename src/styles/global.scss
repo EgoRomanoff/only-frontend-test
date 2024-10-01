@@ -1,13 +1,14 @@
-@use './reset.scss';
-
-:root {}
+@use './_reset';
+@use './_vars';
 
 html {
   font-size: 62.5%; // 10px
 }
 
 body {
+  font-family: vars.$font-primary;
   font-size: 1.6rem; // 16px
+  background-color: vars.$color-whitegray;
 }
 
 #root {
