@@ -77,16 +77,31 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
   }
 
   .pagination-bullet {
+    $transition-props: .8s ease-in-out;
+    $elem-size: 4rem;
+    $before-min-size: .6rem;
+    $before-max-size: 5.6rem;
+
     counter-increment: list-counter;
 
     position: absolute;
-    // transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 4rem;
-    height: 4rem;
+    width: $elem-size;
+    height: $elem-size;
     cursor: pointer;
+
+    span {
+      position: absolute;
+      left: calc(100% + ($before-max-size - $elem-size) / 2 + 2rem);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.5;
+      pointer-events: none;
+      user-select: none;
+      opacity: 0;
+    }
 
     &:before {
       position: absolute;
@@ -94,8 +109,8 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 0.6rem;
-      height: 0.6rem;
+      width: $before-min-size;
+      height: $before-min-size;
       border: 1px solid $color-grayblue;
       border-radius: 50%;
       font-size: 2rem;
@@ -104,31 +119,46 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
       overflow: hidden;
       user-select: none;
       pointer-events: none;
+      transition:
+        width $transition-props,
+        height $transition-props,
+        background-color $transition-props;
     }
 
     &:hover,
     &-active {
       &:before {
-        width: 5.6rem;
-        height: 5.6rem;
+        width: $before-max-size;
+        height: $before-max-size;
         background-color: $color-whitegray;
         border-color: rgba($color-darkgrayblue, 0.5);
+      }
+    }
+
+    &-active {
+      span {
+        animation: bullet-title-fade .5s ease-in-out forwards .8s;
       }
     }
   }
 }
 
 .years-slide {
+  $year-font-size: 20rem;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6em;
+  gap: calc($year-font-size / 2);
   width: 100%;
   height: 100%;
-  font-size: 20rem;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.2rem;
+
+  .year {
+    font-size: $year-font-size;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.2rem;
+  }
 
   .start-year {
     color: $color-iris;
@@ -137,4 +167,9 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
   .end-year {
     color: $color-fuschia;
   }
+}
+
+@keyframes bullet-title-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

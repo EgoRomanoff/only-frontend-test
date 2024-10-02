@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import clsx from "clsx";
 import { type Swiper as SwiperType } from "swiper/types";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -7,46 +8,20 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
 import Container from "@components/ui/container";
 import type { HistoryDate } from "@/types/history";
+import { getCircleAngle } from "@/utils/getCircleAngle";
+import { generateArcPath } from "@/utils/generateArcPath";
+import { getXCoord } from "@/utils/getXCoord";
+import { getYCoord } from "@/utils/getYCoord";
 
 import styles from "./styles.module.scss";
 
 gsap.registerPlugin(MotionPathPlugin);
 
-const getAngle = (i: number, activeIndex: number, itemsCount: number) => {
-  const circleIndex = (i - activeIndex + itemsCount) % itemsCount;
-  const sectorAngle = (2 * Math.PI) / itemsCount;
-  const bulletOffsetAngle = Math.PI / 3; // Угол смещения - 60 градусов
-
-  return circleIndex * sectorAngle - bulletOffsetAngle;
-};
-
-const getXCoord = (radius: number, angle: number) => radius * Math.cos(angle);
-const getYCoord = (radius: number, angle: number) => radius * Math.sin(angle);
-
-const getCirclePosition = (i: number, activeIndex: number, itemsCount: number, radius: number) => {
-  const angle = getAngle(i, activeIndex, itemsCount);
-  const x = getXCoord(radius, angle);
-  const y = getYCoord(radius, angle);
-
-  return { x, y };
-};
-
-// Генерация пути по окружности для анимации
-const generateArcPath = (startAngle: number, endAngle: number, radius: number) => {
-  const moveTo = `M ${getXCoord(radius, startAngle)} ${getYCoord(radius, startAngle)}`;
-  const arc = `A ${radius} ${radius}`;
-  const rotation = 0;
-  const largeArcFlag = Math.abs(endAngle - startAngle) > Math.PI ? 1 : 0;
-  const sweepFlag = endAngle > startAngle ? 1 : 0;
-  const end = `${getXCoord(radius, endAngle)} ${getYCoord(radius, endAngle)}`;
-
-  return `${moveTo} ${arc} ${rotation} ${largeArcFlag} ${sweepFlag} ${end}`;
-};
-
 const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) => {
   const yearsSliderRef = useRef<SwiperType>();
   const itemsCount = data.length;
 
+  const bulletOffsetAngle = Math.PI / 3; // Угол смещения - 60 градусов
   const radius = 530 / 2; // Радиус круга
 
   const handlePaginationStyling = ({ pagination }: SwiperType) => {
@@ -54,45 +29,43 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
 
     if (bullets) {
       bullets.forEach((bullet, i) => {
-        const coords = getCirclePosition(i, 0, itemsCount, radius);
+        const angle = getCircleAngle(i, 0, itemsCount, bulletOffsetAngle);
 
-        gsap.set(bullet, coords);
+        gsap.set(bullet, {
+          x: getXCoord(radius, angle),
+          y: getYCoord(radius, angle),
+        });
       });
     }
   };
 
   const handleRealIndexChange = ({ pagination, realIndex, previousIndex }: SwiperType) => {
-    console.log(`previous ${previousIndex} - real ${realIndex}`)
     const { bullets } = pagination;
 
     bullets.forEach((bullet, i) => {
-      const startAngle = getAngle(i, previousIndex, itemsCount);
-      const endAngle = getAngle(i, realIndex, itemsCount);
+      const startAngle = getCircleAngle(i, previousIndex, itemsCount, bulletOffsetAngle);
+      const endAngle = getCircleAngle(i, realIndex, itemsCount, bulletOffsetAngle);
 
       let adjustedEndAngle = endAngle;
 
-      // Определение направления движения
-      const isMovingBackward =
-        // (realIndex < previousIndex && !(previousIndex === itemsCount - 1 && realIndex === 0)) ||
-        // (realIndex < previousIndex && !(previousIndex === itemsCount - 1)) ||
-        (realIndex < previousIndex && !(previousIndex === itemsCount - 1 || previousIndex < itemsCount - 1)) ||
-        (realIndex === itemsCount - 1 && previousIndex === 0);
+      const halfCount = Math.floor(itemsCount / 2);
+      const fullCircle = 2 * Math.PI;
+      const isClockwise =
+        (realIndex < previousIndex && previousIndex - realIndex <= halfCount) ||
+        (realIndex > previousIndex && realIndex - previousIndex > halfCount);
 
-      if (isMovingBackward) {
-        // Против часовой стрелки
-        adjustedEndAngle = endAngle < startAngle ? endAngle + 2 * Math.PI : endAngle;
-      } else {
+      if (isClockwise) {
         // По часовой стрелке
-        adjustedEndAngle = endAngle >= startAngle ? endAngle - 2 * Math.PI : endAngle;
+        adjustedEndAngle = endAngle < startAngle ? endAngle + fullCircle : endAngle;
+      } else {
+        // Против часовой стрелки
+        adjustedEndAngle = endAngle >= startAngle ? endAngle - fullCircle : endAngle;
       }
 
       gsap.to(bullet, {
         duration: 0.8,
-        // @ts-ignore
         motionPath: {
           path: generateArcPath(startAngle, adjustedEndAngle, radius),
-          align: "self",
-          alignOrigin: [0.5, 0.5],
           autoRotate: false,
         },
         ease: "power1.inOut",
@@ -120,16 +93,23 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
           pagination={{
             bulletClass: styles["pagination-bullet"],
             bulletActiveClass: styles["pagination-bullet-active"],
+            renderBullet(i, className) {
+              return `<div class="${className}"><span>${data[i].title}</span></div>`;
+            },
             clickable: true,
           }}
           onAfterInit={handlePaginationStyling}
           onRealIndexChange={handleRealIndexChange}
+          speed={800}
+          preventInteractionOnTransition={true}
+          allowTouchMove={false}
+          mousewheel={false}
         >
           {data.map(({ startYear, endYear }) => (
             <SwiperSlide key={`${startYear}-${endYear}`}>
               <div className={styles["years-slide"]}>
-                <span className={styles["start-year"]}>{startYear}</span>
-                <span className={styles["end-year"]}>{endYear}</span>
+                <span className={clsx(styles.year, styles["start-year"])}>{startYear}</span>
+                <span className={clsx(styles.year, styles["end-year"])}>{endYear}</span>
               </div>
             </SwiperSlide>
           ))}
