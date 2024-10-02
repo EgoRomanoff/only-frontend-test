@@ -1,8 +1,10 @@
-@import '@styles/vars';
+@use "@styles/mixins" as mixins;
+@import "@styles/vars";
+
+$line-color: rgba($color-grayblue, 0.1);
+$line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 
 .block {
-  $line-color: rgba($color-grayblue, .1);
-  $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
   $line-size: 1px 100%;
 
   position: relative;
@@ -11,10 +13,9 @@
   height: 100%;
   padding-top: 17rem;
 
-  background:
-    $line-gradient left center / $line-size no-repeat,   // left line
-    $line-gradient center center / $line-size no-repeat, // center line
-    $line-gradient right center / $line-size no-repeat;  // right line
+  background: $line-gradient left center / $line-size no-repeat,
+    $line-gradient center center / $line-size no-repeat,
+    $line-gradient right center / $line-size no-repeat;
 }
 
 .title {
@@ -27,7 +28,7 @@
   line-height: 1.2;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 0;
@@ -35,5 +36,97 @@
     width: 5px;
     height: 90%;
     background: linear-gradient($color-blue, $color-fuschia);
+  }
+}
+
+.years-slider {
+  $line-size: 100% 1px;
+  $pagination-box-size: 53rem;
+  $radius: calc($pagination-box-size / 2);
+
+  width: 100%;
+  height: 100%;
+  max-height: 53rem;
+  background: $line-gradient center center / $line-size no-repeat;
+
+  & :global(.swiper-pagination) {
+    counter-reset: bullet-counter;
+    border: 1px solid $line-color;
+    border-radius: 50%;
+    width: 100%;
+    max-width: $pagination-box-size;
+    height: 100%;
+    max-height: $pagination-box-size;
+    aspect-ratio: 1 / 1;
+
+    @for $i from 1 through 100 {
+      & .pagination-bullet:nth-child(#{$i}) {
+        $angle: calc(360deg / var(--items-count) * (#{$i} - 1));
+
+        position: absolute;
+        top: calc(50% - sin($angle) * $radius);
+        left: calc(50% + cos($angle) * $radius);
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+    }
+  }
+
+  .pagination-bullet {
+    counter-increment: list-counter;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    cursor: pointer;
+
+    &:before {
+      position: absolute;
+      content: counter(list-counter);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 0.6rem;
+      height: 0.6rem;
+      border: 1px solid $color-grayblue;
+      border-radius: 50%;
+      font-size: 2rem;
+      line-height: 1.5;
+      background-color: $color-grayblue;
+      overflow: hidden;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    &:hover,
+    &-active {
+      &:before {
+        width: 5.6rem;
+        height: 5.6rem;
+        background-color: $color-whitegray;
+        border-color: rgba($color-darkgrayblue, 0.5);
+      }
+    }
+  }
+}
+
+.years-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  font-size: 20rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.2rem;
+  width: 100%;
+
+  .start-year {
+    color: $color-iris;
+  }
+
+  .end-year {
+    color: $color-fuschia;
   }
 }

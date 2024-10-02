@@ -1,5 +1,8 @@
 @use './_reset';
 @import './_vars';
+@import 'swiper/scss';
+@import 'swiper/scss/navigation';
+@import 'swiper/scss/pagination';
 
 html {
   font-size: 62.5%; // 10px

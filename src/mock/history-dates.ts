@@ -1,5 +1,4 @@
-// @ts-ignore
-import { HistoryDate } from "@types/history";
+import { HistoryDate } from "@/types/history";
 
 export const historyDates: HistoryDate[] = [
   {

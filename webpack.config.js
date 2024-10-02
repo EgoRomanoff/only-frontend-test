@@ -44,7 +44,7 @@ module.exports = env => {
       alias: {
         "@components": path.resolve(__dirname, "src", "components"),
         "@styles": path.resolve(__dirname, "src", "styles"),
-        "@types": path.resolve(__dirname, "src", "types"),
+        "@": path.resolve(__dirname, "src"),
       },
     },
 
