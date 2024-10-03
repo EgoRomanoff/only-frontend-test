@@ -2,6 +2,8 @@
 
 $line-color: rgba($color-grayblue, 0.1);
 $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
+$years-pagination-max-height: 62rem;
+$years-pagination-circle: 53rem;
 
 .block {
   $line-size: 1px 100%;
@@ -10,7 +12,7 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: 17rem;
+  padding: 17rem 8rem 0;
 
   background: $line-gradient left center / $line-size no-repeat,
     $line-gradient center center / $line-size no-repeat,
@@ -18,7 +20,8 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 }
 
 .title {
-  position: relative;
+  position: absolute;
+  left: 0;
   padding-left: 8rem;
   width: 100%;
   max-width: 44rem;
@@ -39,47 +42,71 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 }
 
 .years-slider {
-  $line-size: 100% 1px;
-  $pagination-box-size: 53rem;
+  height: 0;
+  width: 100%;
+}
 
+.years-slide {
+  $year-font-size: 20rem;
+
+  position: absolute;
+  inset: auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc($year-font-size / 2);
   width: 100%;
   height: 100%;
-  max-height: 53rem;
+  max-height: $years-pagination-max-height;
+  user-select: none;
+  z-index: -1;
+
+  .year {
+    font-size: $year-font-size;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.2rem;
+
+    &:nth-child(1) {
+      color: $color-iris;
+    }
+
+    &:nth-child(2) {
+      color: $color-fuschia;
+    }
+  }
+}
+
+.years-slider__pagination {
+  $line-size: 100% 1px;
+
+  counter-reset: bullet-counter;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: 1;
+  width: 100%;
+  height: 100%;
+  max-height: $years-pagination-max-height;
+  z-index: 10;
   background: $line-gradient center center / $line-size no-repeat;
 
-  & :global(.swiper-pagination) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    counter-reset: bullet-counter;
-    left: 50% !important;
-    transform: translateX(-50%);
+  &:before {
+    content: "";
+    display: block;
     width: 100%;
-    max-width: $pagination-box-size;
-    height: 100%;
-    --swiper-pagination-top: 0;
-    --swiper-pagination-bottom: 0;
-
-    &:before {
-      position: absolute;
-      content: "";
-      left: 50%;
-      transform: translate(-50%);
-      display: block;
-      width: 100%;
-      height: 100%;
-      aspect-ratio: 1 / 1;
-      border: 1px solid $line-color;
-      border-radius: 50%;
-      pointer-events: none;
-      user-select: none;
-    }
+    max-width: $years-pagination-circle;
+    aspect-ratio: 1 / 1;
+    border: 1px solid $line-color;
+    border-radius: 50%;
+    pointer-events: none;
+    user-select: none;
   }
 
   .pagination-bullet {
-    $transition-props: .8s ease-in-out;
+    $transition-props: 0.4s ease-in-out;
     $elem-size: 4rem;
-    $before-min-size: .6rem;
+    $before-min-size: 0.6rem;
     $before-max-size: 5.6rem;
 
     counter-increment: list-counter;
@@ -119,9 +146,7 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
       overflow: hidden;
       user-select: none;
       pointer-events: none;
-      transition:
-        width $transition-props,
-        height $transition-props,
+      transition: width $transition-props, height $transition-props,
         background-color $transition-props;
     }
 
@@ -137,39 +162,65 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 
     &-active {
       span {
-        animation: bullet-title-fade .5s ease-in-out forwards .8s;
+        animation: bullet-title-fade 0.3s ease-in-out forwards 0.8s;
       }
     }
   }
 }
 
-.years-slide {
-  $year-font-size: 20rem;
-
+.years-slides__controls {
+  position: relative;
+  transform: translateY(-100%);
+  order: 2;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc($year-font-size / 2);
-  width: 100%;
-  height: 100%;
+  flex-direction: column;
+  gap: 2rem;
+  width: fit-content;
+  z-index: 15;
 
-  .year {
-    font-size: $year-font-size;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.2rem;
+  .controls__progress {
+    font-size: 1.4rem;
   }
 
-  .start-year {
-    color: $color-iris;
-  }
+  .controls__nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
 
-  .end-year {
-    color: $color-fuschia;
+    .nav__btn-next,
+    .nav__btn-prev {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 5rem;
+      height: 5rem;
+      border: 1px solid rgba($color-grayblue, 0.5);
+      border-radius: 50%;
+      cursor: pointer;
+      color: $color-grayblue;
+
+      &:hover {
+        background-color: white;
+      }
+
+      &.nav__btn--disabled {
+        cursor: default;
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+
+    .nav__btn-next svg {
+      transform: rotate(180deg);
+    }
   }
 }
 
 @keyframes bullet-title-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

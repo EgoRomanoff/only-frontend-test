@@ -1,8 +1,9 @@
-import { useRef } from "react";
-import clsx from "clsx";
+import { useEffect, useRef, useState } from "react";
+// import clsx from "clsx";
 import { type Swiper as SwiperType } from "swiper/types";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+// import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper } from "swiper/react";
+import { Navigation, Pagination, Virtual } from "swiper/modules";
 import { gsap } from "gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
@@ -12,23 +13,30 @@ import { getCircleAngle } from "@/utils/getCircleAngle";
 import { generateArcPath } from "@/utils/generateArcPath";
 import { getXCoord } from "@/utils/getXCoord";
 import { getYCoord } from "@/utils/getYCoord";
+import ArrowLeft from "@components/ui/svg/arrow-left";
 
 import styles from "./styles.module.scss";
 
 gsap.registerPlugin(MotionPathPlugin);
 
 const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) => {
-  const yearsSliderRef = useRef<SwiperType>();
+  const yearsSliderRef = useRef<SwiperType | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   const itemsCount = data.length;
+  const YEARS_SLIDER_NAV_NEXT_ID = "years-slider-nav-next";
+  const YEARS_SLIDER_NAV_PREV_ID = "years-slider-nav-prev";
+  const YEARS_SLIDER_PAGINATION_EL = "years-slider-pagination"
 
   const bulletOffsetAngle = Math.PI / 3; // Угол смещения - 60 градусов
   const radius = 530 / 2; // Радиус круга
 
-  const handlePaginationStyling = ({ pagination }: SwiperType) => {
-    const { bullets } = pagination;
+  useEffect(() => {
+    const swiperInstance = yearsSliderRef.current;
 
-    if (bullets) {
-      bullets.forEach((bullet, i) => {
+    if (swiperInstance) {
+      swiperInstance.virtual.slides = data;
+      swiperInstance.update();
+      swiperInstance.pagination.bullets.forEach((bullet, i) => {
         const angle = getCircleAngle(i, 0, itemsCount, bulletOffsetAngle);
 
         gsap.set(bullet, {
@@ -37,7 +45,7 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
         });
       });
     }
-  };
+  }, [data]);
 
   const handleRealIndexChange = ({ pagination, realIndex, previousIndex }: SwiperType) => {
     const { bullets } = pagination;
@@ -71,6 +79,8 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
         ease: "power1.inOut",
       });
     });
+
+    setActiveIndex(realIndex);
   };
 
   return (
@@ -79,41 +89,65 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
         <h2 className={styles.title}>{title}</h2>
 
         <Swiper
-          className={styles["years-slider"]}
-          style={
-            {
-              "--items-count": data.length,
-              "--radius": radius,
-            } as React.CSSProperties
-          }
-          modules={[Navigation, Pagination]}
+          modules={[Navigation, Pagination, Virtual]}
           onSwiper={swiper => {
             yearsSliderRef.current = swiper;
           }}
+          className={styles["years-slider"]}
+          navigation={{
+            disabledClass: styles["nav__btn--disabled"],
+            nextEl: `#${YEARS_SLIDER_NAV_NEXT_ID}`,
+            prevEl: `#${YEARS_SLIDER_NAV_PREV_ID}`,
+          }}
           pagination={{
+            el: `#${YEARS_SLIDER_PAGINATION_EL}`,
             bulletClass: styles["pagination-bullet"],
             bulletActiveClass: styles["pagination-bullet-active"],
-            renderBullet(i, className) {
-              return `<div class="${className}"><span>${data[i].title}</span></div>`;
-            },
+            type: "bullets",
             clickable: true,
+            renderBullet(i, className) {
+              return `<li class="${className}"><span>${data[i].title}</span></li>`;
+            },
           }}
-          onAfterInit={handlePaginationStyling}
           onRealIndexChange={handleRealIndexChange}
-          speed={800}
+          speed={600}
           preventInteractionOnTransition={true}
           allowTouchMove={false}
           mousewheel={false}
-        >
-          {data.map(({ startYear, endYear }) => (
-            <SwiperSlide key={`${startYear}-${endYear}`}>
-              <div className={styles["years-slide"]}>
-                <span className={clsx(styles.year, styles["start-year"])}>{startYear}</span>
-                <span className={clsx(styles.year, styles["end-year"])}>{endYear}</span>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+          slidesPerView={1}
+          virtual
+        />
+
+        <p className={styles['years-slide']}>
+          <span className={styles.year}>{data[activeIndex].startYear}</span>
+          <span className={styles.year}>{data[activeIndex].endYear}</span>
+        </p>
+
+        <ul
+          id="years-slider-pagination"
+          className={styles["years-slider__pagination"]}
+        />
+
+        <div className={styles["years-slides__controls"]}>
+          <span className={styles["controls__progress"]}>
+            {String(activeIndex + 1).padStart(2, "0")}/{String(itemsCount).padStart(2, "0")}
+          </span>
+
+          <div className={styles["controls__nav"]}>
+            <button
+              id={YEARS_SLIDER_NAV_PREV_ID}
+              className={styles["nav__btn-prev"]}
+            >
+              <ArrowLeft />
+            </button>
+            <button
+              id={YEARS_SLIDER_NAV_NEXT_ID}
+              className={styles["nav__btn-next"]}
+            >
+              <ArrowLeft />
+            </button>
+          </div>
+        </div>
       </section>
     </Container>
   );
