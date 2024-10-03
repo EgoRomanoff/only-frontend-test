@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-// import clsx from "clsx";
 import { type Swiper as SwiperType } from "swiper/types";
-// import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper } from "swiper/react";
 import { Navigation, Pagination, Virtual } from "swiper/modules";
 import { gsap } from "gsap";
@@ -16,20 +14,30 @@ import { getYCoord } from "@/utils/getYCoord";
 import ArrowLeft from "@components/ui/svg/arrow-left";
 
 import styles from "./styles.module.scss";
+import { updateYear } from "@/utils/updateYear";
 
 gsap.registerPlugin(MotionPathPlugin);
 
+const YEARS_SLIDER_NAV_NEXT_ID = "years-slider-nav-next";
+const YEARS_SLIDER_NAV_PREV_ID = "years-slider-nav-prev";
+const YEARS_SLIDER_PAGINATION_EL = "years-slider-pagination";
+const ANIMATION_DURATION = 0.8;
+const BULLET_OFFSET_ANGLE = Math.PI / 3;
+
 const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) => {
   const yearsSliderRef = useRef<SwiperType | null>(null);
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const itemsCount = data.length;
-  const YEARS_SLIDER_NAV_NEXT_ID = "years-slider-nav-next";
-  const YEARS_SLIDER_NAV_PREV_ID = "years-slider-nav-prev";
-  const YEARS_SLIDER_PAGINATION_EL = "years-slider-pagination"
+  const startYearRef = useRef<HTMLSpanElement | null>(null);
+  const endYearRef = useRef<HTMLSpanElement | null>(null);
 
-  const bulletOffsetAngle = Math.PI / 3; // Угол смещения - 60 градусов
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [startYear, setStartYear] = useState<number>(data[0].startYear);
+  const [endYear, setEndYear] = useState<number>(data[0].endYear);
+
+  const itemsCount = data.length;
+
   const radius = 530 / 2; // Радиус круга
 
+  // set array of data as virtual slides and styling pagination bullets
   useEffect(() => {
     const swiperInstance = yearsSliderRef.current;
 
@@ -37,7 +45,7 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
       swiperInstance.virtual.slides = data;
       swiperInstance.update();
       swiperInstance.pagination.bullets.forEach((bullet, i) => {
-        const angle = getCircleAngle(i, 0, itemsCount, bulletOffsetAngle);
+        const angle = getCircleAngle(i, 0, itemsCount, BULLET_OFFSET_ANGLE);
 
         gsap.set(bullet, {
           x: getXCoord(radius, angle),
@@ -47,31 +55,46 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
     }
   }, [data]);
 
+  // Update years values when active index change
+  useEffect(() => {
+    const startYearElem = startYearRef.current;
+    const endYearElem = endYearRef.current;
+    const newStartYear = data[activeIndex].startYear;
+    const newEndYear = data[activeIndex].endYear;
+
+    if (startYearElem && endYearElem) {
+      updateYear(startYearElem, startYear, newStartYear, ANIMATION_DURATION);
+      updateYear(endYearElem, endYear, newEndYear, ANIMATION_DURATION);
+    }
+
+    setStartYear(newStartYear);
+    setEndYear(newEndYear);
+  }, [activeIndex]);
+
   const handleRealIndexChange = ({ pagination, realIndex, previousIndex }: SwiperType) => {
     const { bullets } = pagination;
 
     bullets.forEach((bullet, i) => {
-      const startAngle = getCircleAngle(i, previousIndex, itemsCount, bulletOffsetAngle);
-      const endAngle = getCircleAngle(i, realIndex, itemsCount, bulletOffsetAngle);
-
-      let adjustedEndAngle = endAngle;
-
       const halfCount = Math.floor(itemsCount / 2);
       const fullCircle = 2 * Math.PI;
+      const startAngle = getCircleAngle(i, previousIndex, itemsCount, BULLET_OFFSET_ANGLE);
+      const endAngle = getCircleAngle(i, realIndex, itemsCount, BULLET_OFFSET_ANGLE);
+
+      // check pagination bullets animation direction
       const isClockwise =
         (realIndex < previousIndex && previousIndex - realIndex <= halfCount) ||
         (realIndex > previousIndex && realIndex - previousIndex > halfCount);
 
+      let adjustedEndAngle = null;
+      // change end angle for pagination bullets
       if (isClockwise) {
-        // По часовой стрелке
         adjustedEndAngle = endAngle < startAngle ? endAngle + fullCircle : endAngle;
       } else {
-        // Против часовой стрелки
         adjustedEndAngle = endAngle >= startAngle ? endAngle - fullCircle : endAngle;
       }
 
       gsap.to(bullet, {
-        duration: 0.8,
+        duration: ANIMATION_DURATION,
         motionPath: {
           path: generateArcPath(startAngle, adjustedEndAngle, radius),
           autoRotate: false,
@@ -118,9 +141,19 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
           virtual
         />
 
-        <p className={styles['years-slide']}>
-          <span className={styles.year}>{data[activeIndex].startYear}</span>
-          <span className={styles.year}>{data[activeIndex].endYear}</span>
+        <p className={styles["years-slide"]}>
+          <span
+            ref={startYearRef}
+            className={styles.year}
+          >
+            {startYear}
+          </span>
+          <span
+            ref={endYearRef}
+            className={styles.year}
+          >
+            {endYear}
+          </span>
         </p>
 
         <ul
