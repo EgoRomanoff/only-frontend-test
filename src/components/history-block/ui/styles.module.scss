@@ -2,7 +2,6 @@
 
 $line-color: rgba($color-grayblue, 0.1);
 $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
-$years-pagination-max-height: 62rem;
 $years-pagination-circle: 53rem;
 
 .block {
@@ -12,7 +11,8 @@ $years-pagination-circle: 53rem;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 17rem 8rem 0;
+  margin-left: 16rem;
+  padding-top: 17rem;
 
   background: $line-gradient left center / $line-size no-repeat,
     $line-gradient center center / $line-size no-repeat,
@@ -46,37 +46,6 @@ $years-pagination-circle: 53rem;
   width: 100%;
 }
 
-.years-slide {
-  $year-font-size: 20rem;
-
-  position: absolute;
-  inset: auto 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc($year-font-size / 2);
-  width: 100%;
-  height: 100%;
-  max-height: $years-pagination-max-height;
-  user-select: none;
-  z-index: -1;
-
-  .year {
-    font-size: $year-font-size;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.2rem;
-
-    &:nth-child(1) {
-      color: $color-iris;
-    }
-
-    &:nth-child(2) {
-      color: $color-fuschia;
-    }
-  }
-}
-
 .years-slider__pagination {
   $line-size: 100% 1px;
 
@@ -89,6 +58,7 @@ $years-pagination-circle: 53rem;
   height: 100%;
   max-height: $years-pagination-max-height;
   z-index: 10;
+  padding: 0 8rem;
   background: $line-gradient center center / $line-size no-repeat;
 
   &:before {
@@ -177,6 +147,7 @@ $years-pagination-circle: 53rem;
   gap: 2rem;
   width: fit-content;
   z-index: 15;
+  padding-left: 8rem;
 
   .controls__progress {
     font-size: 1.4rem;
@@ -213,6 +184,78 @@ $years-pagination-circle: 53rem;
     .nav__btn-next svg {
       transform: rotate(180deg);
     }
+  }
+}
+
+.events-slider {
+  display: grid !important;
+  grid-template-columns: 8rem 1fr 8rem;
+  order: 3;
+  width: 100%;
+
+  :global(.swiper) {
+    grid-column: 2 / 3;
+    width: 100%;
+  }
+
+  :global(.swiper-slide) {
+    max-width: 32rem;
+  }
+
+  .nav-btn__next,
+  .nav-btn__prev {
+    grid-row: 1 / -1;
+    justify-self: center;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    background-color: white;
+    border-radius: 50%;
+    color: $color-blue;
+    box-shadow: 0 0 1.5rem 0 rgba($color-blue, .1);
+
+    svg {
+      width: 1rem;
+    }
+
+    &:global(.swiper-button-disabled) {
+      display: none;
+    }
+  }
+
+  .nav-btn__prev {
+    grid-column: 1 / 2;
+  }
+
+  .nav-btn__next {
+    grid-column: 3 / 4;
+
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.event-slide {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+  flex-shrink: 0;
+
+  .event-title {
+    font-family: $font-secondary;
+    font-size: 2.5rem;
+    color: $color-blue;
+    line-height: 1.2;
+  }
+
+  .event-text {
+    font-size: 2rem;
+    line-height: 1.5;
   }
 }
 

@@ -1,9 +1,9 @@
 import { gsap } from "gsap";
 
-export const updateYear = (elem: HTMLElement, from: number, to: number, duration: number = 1) => {
+export const updateYear = (elem: HTMLElement, to: number, duration: number = 1) => {
   gsap.fromTo(
     elem,
-    { innerText: from },
+    { innerText: elem.innerText },
     {
       innerText: to,
       duration,

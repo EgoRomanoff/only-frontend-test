@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { type Swiper as SwiperType } from "swiper/types";
-import { Swiper } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Virtual } from "swiper/modules";
 import { gsap } from "gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
@@ -12,26 +12,27 @@ import { generateArcPath } from "@/utils/generateArcPath";
 import { getXCoord } from "@/utils/getXCoord";
 import { getYCoord } from "@/utils/getYCoord";
 import ArrowLeft from "@components/ui/svg/arrow-left";
+import YearsBanner from "@components/years-banner";
+import { ANIMATION_DURATION } from "@components/constants";
 
 import styles from "./styles.module.scss";
-import { updateYear } from "@/utils/updateYear";
 
 gsap.registerPlugin(MotionPathPlugin);
 
 const YEARS_SLIDER_NAV_NEXT_ID = "years-slider-nav-next";
 const YEARS_SLIDER_NAV_PREV_ID = "years-slider-nav-prev";
 const YEARS_SLIDER_PAGINATION_EL = "years-slider-pagination";
-const ANIMATION_DURATION = 0.8;
+
+const EVENTS_SLIDER_NAV_NEXT_ID = "events-slider-nav-next";
+const EVENTS_SLIDER_NAV_PREV_ID = "events-slider-nav-prev";
+
 const BULLET_OFFSET_ANGLE = Math.PI / 3;
 
 const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) => {
   const yearsSliderRef = useRef<SwiperType | null>(null);
-  const startYearRef = useRef<HTMLSpanElement | null>(null);
-  const endYearRef = useRef<HTMLSpanElement | null>(null);
+  const eventsSliderRef = useRef<SwiperType | null>(null);
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [startYear, setStartYear] = useState<number>(data[0].startYear);
-  const [endYear, setEndYear] = useState<number>(data[0].endYear);
 
   const itemsCount = data.length;
 
@@ -54,22 +55,6 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
       });
     }
   }, [data]);
-
-  // Update years values when active index change
-  useEffect(() => {
-    const startYearElem = startYearRef.current;
-    const endYearElem = endYearRef.current;
-    const newStartYear = data[activeIndex].startYear;
-    const newEndYear = data[activeIndex].endYear;
-
-    if (startYearElem && endYearElem) {
-      updateYear(startYearElem, startYear, newStartYear, ANIMATION_DURATION);
-      updateYear(endYearElem, endYear, newEndYear, ANIMATION_DURATION);
-    }
-
-    setStartYear(newStartYear);
-    setEndYear(newEndYear);
-  }, [activeIndex]);
 
   const handleRealIndexChange = ({ pagination, realIndex, previousIndex }: SwiperType) => {
     const { bullets } = pagination;
@@ -141,20 +126,10 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
           virtual
         />
 
-        <p className={styles["years-slide"]}>
-          <span
-            ref={startYearRef}
-            className={styles.year}
-          >
-            {startYear}
-          </span>
-          <span
-            ref={endYearRef}
-            className={styles.year}
-          >
-            {endYear}
-          </span>
-        </p>
+        <YearsBanner
+          startYear={data[activeIndex].startYear}
+          endYear={data[activeIndex].endYear}
+        />
 
         <ul
           id="years-slider-pagination"
@@ -180,6 +155,45 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
               <ArrowLeft />
             </button>
           </div>
+        </div>
+
+        <div className={styles['events-slider']}>
+          <Swiper
+            modules={[Navigation]}
+            onSwiper={swiper => {
+              eventsSliderRef.current = swiper;
+            }}
+            navigation={{
+              prevEl: `#${EVENTS_SLIDER_NAV_PREV_ID}`,
+              nextEl: `#${EVENTS_SLIDER_NAV_NEXT_ID}`,
+            }}
+            slidesPerView={"auto"}
+            grabCursor
+            observer
+            spaceBetween={80}
+          >
+            {data[activeIndex].events.map(({ year, text }) => (
+              <SwiperSlide key={`${activeIndex}-${year}`}>
+                <div className={styles["event-slide"]}>
+                  <h4 className={styles["event-title"]}>{year}</h4>
+                  <p className={styles["event-text"]}>{text}</p>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <button
+            id={EVENTS_SLIDER_NAV_PREV_ID}
+            className={styles["nav-btn__prev"]}
+          >
+            <ArrowLeft />
+          </button>
+          <button
+            id={EVENTS_SLIDER_NAV_NEXT_ID}
+            className={styles["nav-btn__next"]}
+          >
+            <ArrowLeft />
+          </button>
         </div>
       </section>
     </Container>
