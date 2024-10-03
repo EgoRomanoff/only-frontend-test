@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { type Swiper as SwiperType } from "swiper/types";
-// import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper } from "swiper/react";
 import { Navigation, Pagination, Virtual } from "swiper/modules";
 import { gsap } from "gsap";

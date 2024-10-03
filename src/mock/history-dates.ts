@@ -1,5 +1,5 @@
 import { HistoryDate } from "@/types/history";
-
+// TODO: !!! ОТРАБОТАТЬ СЛУЧАЙ С МАССИВОМ ДЛИННОЙ 1
 export const historyDates: HistoryDate[] = [
   {
     title: 'Технологии',
