@@ -1,0 +1,74 @@
+@import "@styles/vars";
+
+.events-slider {
+  display: grid !important;
+  grid-template-columns: 8rem 1fr 8rem;
+  order: 3;
+  width: 100%;
+  padding: 5.6rem 0;
+
+  :global(.swiper) {
+    grid-column: 2 / 3;
+    width: 100%;
+  }
+
+  :global(.swiper-slide) {
+    max-width: 32rem;
+  }
+
+  .nav-btn__next,
+  .nav-btn__prev {
+    grid-row: 1 / -1;
+    justify-self: center;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    background-color: white;
+    border-radius: 50%;
+    color: $color-blue;
+    box-shadow: 0 0 1.5rem 0 rgba($color-blue, .1);
+
+    svg {
+      width: 1rem;
+    }
+
+    &:global(.swiper-button-disabled) {
+      display: none;
+    }
+  }
+
+  .nav-btn__prev {
+    grid-column: 1 / 2;
+  }
+
+  .nav-btn__next {
+    grid-column: 3 / 4;
+
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.event-slide {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+  flex-shrink: 0;
+
+  .event-title {
+    font-family: $font-secondary;
+    font-size: 2.5rem;
+    color: $color-blue;
+    line-height: 1.2;
+  }
+
+  .event-text {
+    font-size: 2rem;
+    line-height: 1.5;
+  }
+}
