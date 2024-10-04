@@ -165,7 +165,7 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
             radius={radius}
           />
 
-          <EventsSlider eventsData={data[activeIndex].events} />
+          <EventsSlider data={data[activeIndex]} />
         </div>
       </section>
     </Container>

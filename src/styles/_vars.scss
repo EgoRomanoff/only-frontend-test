@@ -7,18 +7,25 @@ $color-blue: #3877EE;
 $color-fuschia: #EF5DA8;
 $color-iris: #5D5FEF;
 $color-whitegray: #F4F5F9;
+$color-lightgray: #C7CDD9;
 
 
 :root {
   --years-pagination-height: 53rem;
   --years-pagination-margin-y: 4.5rem;
+  --history-block-padding-y: 8rem;
 
   @media (max-width: 1439px) {
-    --years-pagination-height: 50rem;
+    --years-pagination-height: 44rem;
+    --history-block-padding-y: 7rem;
   }
 
   @media (max-width: 1023px) {
-    --years-pagination-height: 48rem;
-    --years-pagination-margin-y: 1rem;
+    --years-pagination-height: 34rem;
+    --history-block-padding-y: 6rem;
+  }
+
+  @media (max-width: 767px) {
+    --history-block-padding-y: 0;
   }
 }

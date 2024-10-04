@@ -3,10 +3,6 @@
 $line-color: rgba($color-grayblue, 0.1);
 $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 
-:root {
-  --left-padding: 8rem;
-}
-
 .block {
   $line-size: 1px 100%;
 
@@ -15,6 +11,7 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
   min-height: 100%;
   margin-left: 16rem;
   padding-top: 17rem;
+  padding-bottom: 5rem;
 
   background: $line-gradient left center / $line-size no-repeat,
     $line-gradient center center / $line-size no-repeat,
@@ -31,7 +28,7 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 .title {
   position: absolute;
   left: 0;
-  padding-left: var(--left-padding);
+  padding-left: var(--history-block-padding-y);
   width: 100%;
   max-width: 44rem;
   font-size: 5.6rem;
@@ -55,13 +52,71 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
   width: 100%;
 }
 
+.years-slider__controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto auto;
+  width: 100%;
+  order: 2;
+  gap: 2rem;
+
+  .controls__progress {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    font-size: 1.4rem;
+    padding-left: var(--history-block-padding-y);
+  }
+
+  .controls__nav {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding-left: var(--history-block-padding-y);
+    z-index: 15;
+
+    .nav__btn-next,
+    .nav__btn-prev {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 5rem;
+      height: 5rem;
+      border: 1px solid rgba($color-grayblue, 0.5);
+      border-radius: 50%;
+      cursor: pointer;
+      color: $color-grayblue;
+
+      &:hover {
+        background-color: white;
+      }
+
+      &.nav__btn--disabled {
+        cursor: default;
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
+      svg {
+        user-select: none;
+        pointer-events: none;
+      }
+    }
+
+    .nav__btn-next svg {
+      transform: rotate(180deg);
+    }
+  }
+}
+
 .years-slider__pagination {
   --swiper-pagination-top: 0;
   --diameter: calc(var(--radius) * 2);
   $line-size: 100% 1px;
 
   grid-column: 1 / -1;
-  grid-row: 1 / 4;
+  grid-row: 1 / -1;
   counter-reset: bullet-counter;
   display: flex;
   align-items: center;
@@ -149,63 +204,6 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
   }
 }
 
-.years-slider__controls {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  width: 100%;
-  order: 2;
-  gap: 2rem;
-
-  .controls__progress {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-    font-size: 1.4rem;
-    padding-left: var(--left-padding);
-  }
-
-  .controls__nav {
-    grid-column: 1 / 2;
-    grid-row: 3 / 4;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    padding-left: var(--left-padding);
-    z-index: 15;
-
-    .nav__btn-next,
-    .nav__btn-prev {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 5rem;
-      height: 5rem;
-      border: 1px solid rgba($color-grayblue, 0.5);
-      border-radius: 50%;
-      cursor: pointer;
-      color: $color-grayblue;
-
-      &:hover {
-        background-color: white;
-      }
-
-      &.nav__btn--disabled {
-        cursor: default;
-        pointer-events: none;
-        opacity: 0.5;
-      }
-
-      svg {
-        user-select: none;
-        pointer-events: none;
-      }
-    }
-
-    .nav__btn-next svg {
-      transform: rotate(180deg);
-    }
-  }
-}
-
 @keyframes bullet-title-fade {
   from {
     opacity: 0;
@@ -216,13 +214,10 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 }
 
 @media (max-width: 1439px) {
-  :root {
-    --left-padding: 7rem;
-  }
-
   .block {
     margin-left: 10rem;
     padding-top: 14rem;
+    padding-bottom: 4rem;
   }
 
   .title {
@@ -232,13 +227,10 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 }
 
 @media (max-width: 1023px) {
-  :root {
-    --left-padding: 5rem;
-  }
-
   .block {
     margin-left: 0;
     padding-top: 12rem;
+    padding-bottom: 3rem;
   }
 
   .title {
@@ -248,12 +240,9 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 }
 
 @media (max-width: 767px) {
-  :root {
-    --left-padding: 0;
-  }
-
   .block {
     padding-top: 10rem;
+    padding-bottom: 2rem;
     background: none;
   }
 
