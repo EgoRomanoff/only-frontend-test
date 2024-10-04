@@ -2,7 +2,10 @@
 
 $line-color: rgba($color-grayblue, 0.1);
 $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
-$years-pagination-circle: 53rem;
+
+:root {
+  --left-padding: 8rem;
+}
 
 .block {
   $line-size: 1px 100%;
@@ -28,8 +31,7 @@ $years-pagination-circle: 53rem;
 .title {
   position: absolute;
   left: 0;
-  // position: relative;
-  padding-left: 8rem;
+  padding-left: var(--left-padding);
   width: 100%;
   max-width: 44rem;
   font-size: 5.6rem;
@@ -55,8 +57,8 @@ $years-pagination-circle: 53rem;
 
 .years-slider__pagination {
   --swiper-pagination-top: 0;
+  --diameter: calc(var(--radius) * 2);
   $line-size: 100% 1px;
-
 
   grid-column: 1 / -1;
   grid-row: 1 / 4;
@@ -64,9 +66,9 @@ $years-pagination-circle: 53rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: $years-pagination-margin-y 0;
+  margin: var(--years-pagination-margin-y) 0;
   width: 100%;
-  height: $years-pagination-height;
+  height: var(--years-pagination-height);
   z-index: 10;
   background: $line-gradient center center / $line-size no-repeat;
 
@@ -74,7 +76,7 @@ $years-pagination-circle: 53rem;
     content: "";
     display: block;
     width: 100%;
-    max-width: $years-pagination-circle;
+    max-width: var(--diameter);
     aspect-ratio: 1 / 1;
     border: 1px solid $line-color;
     border-radius: 50%;
@@ -160,7 +162,7 @@ $years-pagination-circle: 53rem;
     grid-column: 1 / 2;
     grid-row: 2 / 3;
     font-size: 1.4rem;
-    padding-left: 8rem;
+    padding-left: var(--left-padding);
   }
 
   .controls__nav {
@@ -169,7 +171,7 @@ $years-pagination-circle: 53rem;
     display: flex;
     align-items: center;
     gap: 2rem;
-    padding-left: 8rem;
+    padding-left: var(--left-padding);
 
     .nav__btn-next,
     .nav__btn-prev {
@@ -206,5 +208,37 @@ $years-pagination-circle: 53rem;
   }
   to {
     opacity: 1;
+  }
+}
+
+@media (max-width: 1439px) {
+  :root {
+    --left-padding: 7rem;
+  }
+
+  .block {
+    margin-left: 10rem;
+    padding-top: 14rem;
+  }
+
+  .title {
+    max-width: 38rem;
+    font-size: 4.8rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --left-padding: 5rem;
+  }
+
+  .block {
+    margin-left: 0;
+    padding-top: 12rem;
+  }
+
+  .title {
+    max-width: 30rem;
+    font-size: 4rem;
   }
 }

@@ -45,9 +45,10 @@ const EventsSlider = ({ eventsData }: { eventsData: HistoryUnit[] }) => {
       timeline.to(sliderContainer, {
         ...FADE_OUT_VARS,
         ...FADE_DURATION,
-        onComplete: () => updateEvents(eventsSwiper), // update events ONLY when slider is invisible
+        // update events ONLY when slider is invisible
+        onComplete: () => updateEvents(eventsSwiper),
       }); // slider fade out
-      timeline.add(() => {}, `+=${ANIMATION_DURATION - FADE_DURATION.duration}`); // 800ms pause
+      timeline.add(() => {}, `+=${ANIMATION_DURATION - FADE_DURATION.duration}`); // pause
       timeline.to(sliderContainer, { ...FADE_IN_VARS, ...FADE_DURATION }); // slider fade in
 
       tl.current = timeline;

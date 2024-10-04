@@ -8,5 +8,17 @@ $color-fuschia: #EF5DA8;
 $color-iris: #5D5FEF;
 $color-whitegray: #F4F5F9;
 
-$years-pagination-height: 53rem;
-$years-pagination-margin-y: 4.5rem;
+
+:root {
+  --years-pagination-height: 53rem;
+  --years-pagination-margin-y: 4.5rem;
+
+  @media (max-width: 1439px) {
+    --years-pagination-height: 50rem;
+  }
+
+  @media (max-width: 1023px) {
+    --years-pagination-height: 48rem;
+    --years-pagination-margin-y: 1rem;
+  }
+}

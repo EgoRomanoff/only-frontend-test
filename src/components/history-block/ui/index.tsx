@@ -9,48 +9,72 @@ import Container from "@components/ui/container";
 import type { HistoryDate } from "@/types/history";
 import { getCircleAngle } from "@/utils/getCircleAngle";
 import { generateArcPath } from "@/utils/generateArcPath";
-import { getXCoord } from "@/utils/getXCoord";
-import { getYCoord } from "@/utils/getYCoord";
-import ArrowLeft from "@components/ui/svg/arrow-left";
 import YearsBanner from "@components/years-banner";
 import EventsSlider from "@components/events-slider";
 import { ANIMATION_DURATION } from "@components/constants";
+import { distributeInCircle } from "@/utils/distributeInCircle";
 
 import styles from "./styles.module.scss";
+import {
+  RADIUS_MAP,
+  YEARS_SLIDER_NAV_NEXT_ID,
+  YEARS_SLIDER_NAV_PREV_ID,
+  YEARS_SLIDER_PAGINATION_EL,
+} from "../constants";
+import YearsSliderControls from "./years-slider-controls";
 
 gsap.registerPlugin(MotionPathPlugin);
 
-const YEARS_SLIDER_NAV_NEXT_ID = "years-slider-nav-next";
-const YEARS_SLIDER_NAV_PREV_ID = "years-slider-nav-prev";
-const YEARS_SLIDER_PAGINATION_EL = "years-slider-pagination";
-
 const BULLET_OFFSET_ANGLE = Math.PI / 3;
+
+const getCircleRadius = () => {
+  const width = window.innerWidth;
+
+  for (const [minWidth, radius] of RADIUS_MAP) {
+    if (width >= minWidth) {
+      return radius;
+    }
+  }
+
+  return 0;
+};
 
 const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) => {
   const yearsSliderRef = useRef<SwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [radius, setRadius] = useState<number>(0);
 
   const itemsCount = data.length;
 
-  const radius = 530 / 2; // Радиус круга
+  const handleResize = () => setRadius(getCircleRadius());
 
-  // set array of data as virtual slides and styling pagination bullets
+  useEffect(() => {
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // set array of data as virtual slides
   useEffect(() => {
     const yearsSwiper = yearsSliderRef.current;
 
     if (yearsSwiper) {
       yearsSwiper.virtual.slides = data;
       yearsSwiper.update();
-      yearsSwiper.pagination.bullets.forEach((bullet, i) => {
-        const angle = getCircleAngle(i, 0, itemsCount, BULLET_OFFSET_ANGLE);
-
-        gsap.set(bullet, {
-          x: getXCoord(radius, angle),
-          y: getYCoord(radius, angle),
-        });
-      });
     }
   }, [data]);
+
+  useEffect(() => {
+    const yearsSwiper = yearsSliderRef.current;
+
+    if (yearsSwiper) {
+      distributeInCircle(yearsSwiper.pagination.bullets, radius, BULLET_OFFSET_ANGLE, activeIndex);
+    }
+  }, [yearsSliderRef.current, radius]);
 
   const handleRealIndexChange = ({ pagination, realIndex, previousIndex }: SwiperType) => {
     const { bullets } = pagination;
@@ -128,31 +152,11 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
             virtual
           />
 
-          <div className={styles["years-slides__controls"]}>
-            <ul
-              id="years-slider-pagination"
-              className={styles["years-slider__pagination"]}
-            />
-
-            <span className={styles["controls__progress"]}>
-              {String(activeIndex + 1).padStart(2, "0")}/{String(itemsCount).padStart(2, "0")}
-            </span>
-
-            <div className={styles["controls__nav"]}>
-              <button
-                id={YEARS_SLIDER_NAV_PREV_ID}
-                className={styles["nav__btn-prev"]}
-              >
-                <ArrowLeft />
-              </button>
-              <button
-                id={YEARS_SLIDER_NAV_NEXT_ID}
-                className={styles["nav__btn-next"]}
-              >
-                <ArrowLeft />
-              </button>
-            </div>
-          </div>
+          <YearsSliderControls
+            activeIndex={activeIndex}
+            itemsCount={itemsCount}
+            radius={radius}
+          />
 
           <EventsSlider eventsData={data[activeIndex].events} />
         </div>

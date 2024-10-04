@@ -1,1 +1,1 @@
-export { default as HistoryBlock } from './ui/history-block'
+export { default as HistoryBlock } from './ui'
