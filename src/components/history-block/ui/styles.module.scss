@@ -1,6 +1,6 @@
-@import "@styles/vars";
+@use "@styles/vars" as v;
 
-$line-color: rgba($color-grayblue, 0.1);
+$line-color: rgba(v.$color-grayblue, 0.1);
 $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
 
 .block {
@@ -43,7 +43,7 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
     transform: translateY(-50%);
     width: 5px;
     height: 90%;
-    background: linear-gradient($color-blue, $color-fuschia);
+    background: linear-gradient(v.$color-blue, v.$color-fuschia);
   }
 }
 
@@ -83,10 +83,10 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
       justify-content: center;
       width: 5rem;
       height: 5rem;
-      border: 1px solid rgba($color-grayblue, 0.5);
+      border: 1px solid rgba(v.$color-grayblue, 0.5);
       border-radius: 50%;
       cursor: pointer;
-      color: $color-grayblue;
+      color: v.$color-grayblue;
 
       &:hover {
         background-color: white;
@@ -174,11 +174,11 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
       justify-content: center;
       width: var(--before-min-size);
       height: var(--before-min-size);
-      border: 1px solid $color-grayblue;
+      border: 1px solid v.$color-grayblue;
       border-radius: 50%;
       font-size: 2rem;
       line-height: 1.5;
-      background-color: $color-grayblue;
+      background-color: v.$color-grayblue;
       overflow: hidden;
       user-select: none;
       pointer-events: none;
@@ -191,8 +191,8 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
       &:before {
         width: $before-max-size;
         height: $before-max-size;
-        background-color: $color-whitegray;
-        border-color: rgba($color-darkgrayblue, 0.5);
+        background-color: v.$color-whitegray;
+        border-color: rgba(v.$color-darkgrayblue, 0.5);
       }
     }
 
@@ -316,8 +316,8 @@ $line-gradient: linear-gradient(to bottom, $line-color, $line-color);
           opacity: 1;
           width: var(--before-min-size);
           height: var(--before-min-size);
-          background-color: $color-grayblue;
-          border-color: $color-grayblue;
+          background-color: v.$color-grayblue;
+          border-color: v.$color-grayblue;
         }
       }
 

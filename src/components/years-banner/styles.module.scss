@@ -1,4 +1,4 @@
-@import "@styles/vars";
+@use "@styles/vars" as v;
 
 .years-banner {
   --year-font-size: 20rem;
@@ -22,11 +22,11 @@
     letter-spacing: -0.2rem;
 
     &:nth-child(1) {
-      color: $color-iris;
+      color: v.$color-iris;
     }
 
     &:nth-child(2) {
-      color: $color-fuschia;
+      color: v.$color-fuschia;
     }
   }
 

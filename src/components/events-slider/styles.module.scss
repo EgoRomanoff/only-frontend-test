@@ -1,4 +1,4 @@
-@import "@styles/vars";
+@use "@styles/vars" as v;
 
 :root {
   --events-slider-space-between: 8rem;
@@ -32,7 +32,7 @@
   .slider-title {
     display: none;
     grid-row: 1 / 2;
-    border-bottom: 1px solid $color-lightgray;
+    border-bottom: 1px solid v.$color-lightgray;
     padding-bottom: 2rem;
     font-size: var(--event-slide-title-size);
   }
@@ -49,8 +49,8 @@
     height: 4rem;
     background-color: white;
     border-radius: 50%;
-    color: $color-blue;
-    box-shadow: 0 0 1.5rem 0 rgba($color-blue, 0.1);
+    color: v.$color-blue;
+    box-shadow: 0 0 1.5rem 0 rgba(v.$color-blue, 0.1);
     cursor: pointer;
 
     svg {
@@ -83,10 +83,10 @@
   flex-shrink: 0;
 
   .event-title {
-    font-family: $font-secondary;
+    font-family: v.$font-secondary;
     font-size: var(--event-slide-title-size);
     font-weight: 400;
-    color: $color-blue;
+    color: v.$color-blue;
     line-height: 1.2;
   }
 

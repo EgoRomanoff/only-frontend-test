@@ -1,5 +1,5 @@
 @use './_reset';
-@import './_vars';
+@use './_vars' as v;
 @import 'swiper/scss';
 @import 'swiper/scss/navigation';
 @import 'swiper/scss/pagination';
@@ -9,10 +9,10 @@ html {
 }
 
 body {
-  font-family: $font-primary;
+  font-family: v.$font-primary;
   font-size: 1.6rem; // 16px
-  color: $color-grayblue;
-  background-color: $color-whitegray;
+  color: v.$color-grayblue;
+  background-color: v.$color-whitegray;
 }
 
 #root {
