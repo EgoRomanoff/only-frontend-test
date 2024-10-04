@@ -13,16 +13,13 @@ import YearsBanner from "@components/years-banner";
 import EventsSlider from "@components/events-slider";
 import { ANIMATION_DURATION } from "@components/constants";
 import { distributeInCircle } from "@/utils/distributeInCircle";
+import { getNavButtonID } from "@/utils/getNavButtonID";
 
-import styles from "./styles.module.scss";
-import {
-  RADIUS_MAP,
-  YEARS_SLIDER_NAV_NEXT_ID,
-  YEARS_SLIDER_NAV_PREV_ID,
-  YEARS_SLIDER_PAGINATION_EL,
-} from "../constants";
+import { RADIUS_MAP } from "../constants";
 import YearsSliderControls from "./years-slider-controls";
 import { distributeInLine } from "@/utils/distributeInLine";
+import { getPaginationID } from "../utils/getPaginationID";
+import styles from "./styles.module.scss";
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -46,6 +43,9 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
   const [radius, setRadius] = useState<number>(0);
 
   const itemsCount = data.length;
+  const NAV_NEXT_ID = getNavButtonID("years", "next");
+  const NAV_PREV_ID = getNavButtonID("years", "prev");
+  const PAGINATION_ID = getPaginationID();
 
   const handleResize = () => setRadius(getCircleRadius());
 
@@ -70,13 +70,13 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
   }, [data]);
 
   useEffect(() => {
-    const bullets =  yearsSliderRef.current?.pagination.bullets
+    const bullets = yearsSliderRef.current?.pagination.bullets;
 
     if (bullets) {
       if (radius) {
         distributeInCircle(bullets, radius, BULLET_OFFSET_ANGLE, activeIndex);
       } else {
-        distributeInLine(bullets)
+        distributeInLine(bullets);
       }
     }
   }, [yearsSliderRef.current, radius]);
@@ -137,11 +137,11 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
             className={styles["years-slider"]}
             navigation={{
               disabledClass: styles["nav__btn--disabled"],
-              nextEl: `#${YEARS_SLIDER_NAV_NEXT_ID}`,
-              prevEl: `#${YEARS_SLIDER_NAV_PREV_ID}`,
+              nextEl: `#${NAV_NEXT_ID}`,
+              prevEl: `#${NAV_PREV_ID}`,
             }}
             pagination={{
-              el: `#${YEARS_SLIDER_PAGINATION_EL}`,
+              el: `#${PAGINATION_ID}`,
               bulletClass: styles["pagination-bullet"],
               bulletActiveClass: styles["pagination-bullet-active"],
               type: "bullets",
@@ -163,6 +163,9 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
             activeIndex={activeIndex}
             itemsCount={itemsCount}
             radius={radius}
+            navPrevID={NAV_PREV_ID}
+            navNextID={NAV_NEXT_ID}
+            paginationID={PAGINATION_ID}
           />
 
           <EventsSlider data={data[activeIndex]} />

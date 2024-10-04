@@ -1,10 +1,9 @@
-import { YEARS_SLIDER_PAGINATION_EL } from "../constants";
 import styles from "./styles.module.scss";
 
-const YearsSliderPagination = ({ radius }: { radius: number }) => {
+const YearsSliderPagination = ({ id, radius }: { id: string; radius: number }) => {
   return (
     <ul
-      id={YEARS_SLIDER_PAGINATION_EL}
+      id={id}
       className={styles["years-slider__pagination"]}
       style={
         {

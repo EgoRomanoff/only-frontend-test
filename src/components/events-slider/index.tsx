@@ -6,12 +6,11 @@ import { gsap } from "gsap";
 
 import ArrowLeft from "@components/ui/svg/arrow-left";
 import type { HistoryDate } from "@/types/history";
+import { ANIMATION_DURATION } from "@components/constants";
+import { getNavButtonID } from "@/utils/getNavButtonID";
 
 import styles from "./styles.module.scss";
-import { ANIMATION_DURATION } from "@components/constants";
 
-const EVENTS_SLIDER_NAV_NEXT_ID = "events-slider-nav-next";
-const EVENTS_SLIDER_NAV_PREV_ID = "events-slider-nav-prev";
 const FADE_OUT_VARS = { opacity: 0 };
 const FADE_IN_VARS = { opacity: 1, y: 0 };
 const FADE_DURATION = { duration: 0.3 };
@@ -20,11 +19,14 @@ const EventsSlider = ({ data }: { data: HistoryDate }) => {
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
   const eventsSliderRef = useRef<SwiperType | null>(null);
-  const [currentData, setCurrentData] = useState<HistoryDate>(() => data)
+  const [currentData, setCurrentData] = useState<HistoryDate>(() => data);
+
+  const NAV_NEXT_ID = getNavButtonID('events', "next");
+  const NAV_PREV_ID = getNavButtonID('events', "prev");
 
   const updateData = (swiper: SwiperType) => {
     swiper.slideTo(0, 0); // slide to first slide without duration
-    setCurrentData(data)
+    setCurrentData(data);
   };
 
   useEffect(() => {
@@ -49,7 +51,7 @@ const EventsSlider = ({ data }: { data: HistoryDate }) => {
         onComplete: () => updateData(eventsSwiper),
       }); // slider fade out
       timeline.add(() => {}, `+=${ANIMATION_DURATION - FADE_DURATION.duration}`); // pause
-      timeline.set(sliderContainer, { y: 10 })
+      timeline.set(sliderContainer, { y: 10 });
       timeline.to(sliderContainer, { ...FADE_IN_VARS, ...FADE_DURATION }); // slider fade in
 
       tl.current = timeline;
@@ -67,7 +69,7 @@ const EventsSlider = ({ data }: { data: HistoryDate }) => {
       ref={sliderContainerRef}
       className={styles["events-slider"]}
     >
-      <h3 className={styles['slider-title']}>{currentData.title}</h3>
+      <h3 className={styles["slider-title"]}>{currentData.title}</h3>
 
       <Swiper
         modules={[Navigation]}
@@ -75,8 +77,8 @@ const EventsSlider = ({ data }: { data: HistoryDate }) => {
           eventsSliderRef.current = swiper;
         }}
         navigation={{
-          prevEl: `#${EVENTS_SLIDER_NAV_PREV_ID}`,
-          nextEl: `#${EVENTS_SLIDER_NAV_NEXT_ID}`,
+          prevEl: `#${NAV_PREV_ID}`,
+          nextEl: `#${NAV_NEXT_ID}`,
         }}
         slidesPerView={"auto"}
         grabCursor
@@ -93,13 +95,13 @@ const EventsSlider = ({ data }: { data: HistoryDate }) => {
       </Swiper>
 
       <button
-        id={EVENTS_SLIDER_NAV_PREV_ID}
+        id={NAV_PREV_ID}
         className={styles["nav-btn__prev"]}
       >
         <ArrowLeft />
       </button>
       <button
-        id={EVENTS_SLIDER_NAV_NEXT_ID}
+        id={NAV_NEXT_ID}
         className={styles["nav-btn__next"]}
       >
         <ArrowLeft />

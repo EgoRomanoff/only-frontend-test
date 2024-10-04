@@ -7,14 +7,20 @@ const YearsSliderControls = ({
   activeIndex,
   itemsCount,
   radius,
+  navNextID,
+  navPrevID,
+  paginationID,
 }: {
   activeIndex: number;
   itemsCount: number;
   radius: number;
+  navPrevID: string;
+  navNextID: string;
+  paginationID: string
 }) => {
   return (
     <div className={styles["years-slider__controls"]}>
-      <YearsSliderPagination radius={radius} />
+      <YearsSliderPagination id={paginationID} radius={radius} />
 
       <YearsSliderProgress
         activeIndex={activeIndex}
@@ -22,8 +28,14 @@ const YearsSliderControls = ({
       />
 
       <div className={styles["controls__nav"]}>
-        <YearsSliderNavButton direction="prev" />
-        <YearsSliderNavButton direction="next" />
+        <YearsSliderNavButton
+          id={navPrevID}
+          direction="prev"
+        />
+        <YearsSliderNavButton
+          id={navNextID}
+          direction="next"
+        />
       </div>
     </div>
   );

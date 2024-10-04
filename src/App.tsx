@@ -1,5 +1,5 @@
 import { HistoryBlock } from "@components/history-block";
-import { historyDates } from "@/mock/history-dates";
+import { historyDates, historyDates2 } from "@/mock/history-dates";
 
 import "./styles/global.scss";
 
@@ -9,6 +9,11 @@ const App = () => {
       <HistoryBlock
         title="Исторические даты"
         data={historyDates}
+      />
+
+      <HistoryBlock
+        title="Исторические даты 2"
+        data={historyDates2}
       />
     </>
   );
