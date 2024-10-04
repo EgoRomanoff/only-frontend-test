@@ -13,7 +13,7 @@ const YearsSliderControls = ({
   radius: number;
 }) => {
   return (
-    <div className={styles["years-slides__controls"]}>
+    <div className={styles["years-slider__controls"]}>
       <YearsSliderPagination radius={radius} />
 
       <YearsSliderProgress

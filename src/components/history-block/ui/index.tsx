@@ -22,6 +22,7 @@ import {
   YEARS_SLIDER_PAGINATION_EL,
 } from "../constants";
 import YearsSliderControls from "./years-slider-controls";
+import { distributeInLine } from "@/utils/distributeInLine";
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -69,44 +70,50 @@ const HistoryBlock = ({ title, data }: { title: string; data: HistoryDate[] }) =
   }, [data]);
 
   useEffect(() => {
-    const yearsSwiper = yearsSliderRef.current;
+    const bullets =  yearsSliderRef.current?.pagination.bullets
 
-    if (yearsSwiper) {
-      distributeInCircle(yearsSwiper.pagination.bullets, radius, BULLET_OFFSET_ANGLE, activeIndex);
+    if (bullets) {
+      if (radius) {
+        distributeInCircle(bullets, radius, BULLET_OFFSET_ANGLE, activeIndex);
+      } else {
+        distributeInLine(bullets)
+      }
     }
   }, [yearsSliderRef.current, radius]);
 
   const handleRealIndexChange = ({ pagination, realIndex, previousIndex }: SwiperType) => {
-    const { bullets } = pagination;
+    if (radius) {
+      const { bullets } = pagination;
 
-    bullets.forEach((bullet, i) => {
-      const halfCount = Math.floor(itemsCount / 2);
-      const fullCircle = 2 * Math.PI;
-      const startAngle = getCircleAngle(i, previousIndex, itemsCount, BULLET_OFFSET_ANGLE);
-      const endAngle = getCircleAngle(i, realIndex, itemsCount, BULLET_OFFSET_ANGLE);
+      bullets.forEach((bullet, i) => {
+        const halfCount = Math.floor(itemsCount / 2);
+        const fullCircle = 2 * Math.PI;
+        const startAngle = getCircleAngle(i, previousIndex, itemsCount, BULLET_OFFSET_ANGLE);
+        const endAngle = getCircleAngle(i, realIndex, itemsCount, BULLET_OFFSET_ANGLE);
 
-      // check pagination bullets animation direction
-      const isClockwise =
-        (realIndex < previousIndex && previousIndex - realIndex <= halfCount) ||
-        (realIndex > previousIndex && realIndex - previousIndex > halfCount);
+        // check pagination bullets animation direction
+        const isClockwise =
+          (realIndex < previousIndex && previousIndex - realIndex <= halfCount) ||
+          (realIndex > previousIndex && realIndex - previousIndex > halfCount);
 
-      let adjustedEndAngle = null;
-      // change end angle for pagination bullets
-      if (isClockwise) {
-        adjustedEndAngle = endAngle < startAngle ? endAngle + fullCircle : endAngle;
-      } else {
-        adjustedEndAngle = endAngle >= startAngle ? endAngle - fullCircle : endAngle;
-      }
+        let adjustedEndAngle = null;
+        // change end angle for pagination bullets
+        if (isClockwise) {
+          adjustedEndAngle = endAngle < startAngle ? endAngle + fullCircle : endAngle;
+        } else {
+          adjustedEndAngle = endAngle >= startAngle ? endAngle - fullCircle : endAngle;
+        }
 
-      gsap.to(bullet, {
-        duration: ANIMATION_DURATION,
-        motionPath: {
-          path: generateArcPath(startAngle, adjustedEndAngle, radius),
-          autoRotate: false,
-        },
-        ease: "power1.inOut",
+        gsap.to(bullet, {
+          duration: ANIMATION_DURATION,
+          motionPath: {
+            path: generateArcPath(startAngle, adjustedEndAngle, radius),
+            autoRotate: false,
+          },
+          ease: "power1.inOut",
+        });
       });
-    });
+    }
 
     setActiveIndex(realIndex);
   };
